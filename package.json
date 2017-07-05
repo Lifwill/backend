@@ -7,12 +7,18 @@
   "author": "Jonathan Wafellman <jwafellman@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "babel server.js",
-    "build": "gulp build",
-    "start": "gulp start"
+    "start": "gulp start",
+    "build": "gulp build"
   },
   "dependencies": {
-    "express": "^4.15.3"
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.17.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "mongoose": "^4.11.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
