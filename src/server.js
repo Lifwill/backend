@@ -9,15 +9,13 @@ import localPassport from './local-passport';
 import auth from './routes/auth.routes';
 import serverConfig from './serverConfig';
 
-const app = express(); 
+const app = express();
 
 // MongoDB Connection
 mongoose.connect(serverConfig.mongoURL, { useMongoClient: true}, error => {
   if (error) {
     console.log('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;
-  } else {
-    console.log('no error');
   }
 });
 app.use(cookieParser()); // read cookies (needed for auth)

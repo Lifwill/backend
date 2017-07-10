@@ -8,6 +8,7 @@ export function signup(req, res, next) {
         message: 'signupFailed',
       });
     } else {
+      req.session.user = user;
       res.status(200).json({
         user: {
           email: user.email,
@@ -18,8 +19,11 @@ export function signup(req, res, next) {
 }
 
 export function isAuthenticated(req, res) {
+  let user = req.session.user;
   res.status(200).json({
-    user: req.user,
+    user: {
+      email: user.email,
+    },
   });
 }
 
@@ -30,6 +34,7 @@ export function login(req, res, next) {
         mesage: 'loginFailed',
       });
     } else {
+      req.session.user = user;
       res.status(200).json({
         user: {
           email: user.email,
