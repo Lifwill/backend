@@ -1,16 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import session from 'express-session';
-import passport from 'passport';
-
-import localPassport from './local-passport';
-import auth from './routes/auth.routes';
+import jwt from 'jsonwebtoken';
+import auth from './routes/AuthRoutes';
 import serverConfig from './serverConfig';
 
 const app = express();
 
+// Set the promises
+mongoose.Promise = global.Promise;
 // MongoDB Connection
 mongoose.connect(serverConfig.mongoURL, { useMongoClient: true}, error => {
   if (error) {
@@ -18,17 +16,11 @@ mongoose.connect(serverConfig.mongoURL, { useMongoClient: true}, error => {
     throw error;
   }
 });
-app.use(cookieParser()); // read cookies (needed for auth)
+
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
-app.use(session({
-  secret: serverConfig.sessionSecret,  // session secret
-  resave: false,
-  saveUninitialized: false,
-}));
-app.use(passport.initialize());
-localPassport();  // load local passport system
-app.use(passport.session()); // persistent login sessions
+
+app.use(auth.loadUser);
 
 app.use('/api/auth', auth);
 
