@@ -2,12 +2,34 @@ import mongoose, { Schema }  from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import bcrypt from 'bcrypt';
 
-
-const SALT_WORK_FACTOR = 10;
-
 const UserSchema = new Schema({
-  email: { type: 'String', required: true , unique: true, lowercase: true, trim: true},
-  password: { type: 'String', required: true },
+  fullname: {
+    type: String,
+    trim: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please fill a valid email address'
+    ],
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+  },
 });
 
 
@@ -22,28 +44,17 @@ UserSchema.methods.validPassword = function(password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-/*
-UserSchema.pre('save', next => {
-  console.log(this);
+UserSchema.pre('save', function(next) {
   const user = this;
+  // set the createdAt info
+  user.createdAt = user.createdAt || new Date();
 
   // only hash the password if it has been modified (or is new)
-  if (!user.isModified('password')) return next();
-
-  // generate a salt
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-    if (err) return next(err);
-
-    // hash the password using our new salt
-    bcrypt.hash(user.password, salt, function(err, hash) {
-        if (err) return next(err);
-
-        // override the cleartext password with the hashed one
-        user.password = hash;
-        next();
-    });
-  });
-});*/
+  if (user.isModified('password')) {
+    user.password = user.generateHash(user.password);
+  }
+  next();
+});
 
 UserSchema.plugin(uniqueValidator);
 // create the model for users and expose it to our app

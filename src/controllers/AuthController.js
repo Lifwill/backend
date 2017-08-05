@@ -40,9 +40,6 @@ const jwtSign = (user) => {
 
 export function signup(req, res) {
   const user = new User(req.body);
-  if (user.password) {
-    user.password = user.generateHash(user.password);
-  }
   user.save(function(err, user) {
     if (err) {
       res.status(500).json({
