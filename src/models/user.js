@@ -1,6 +1,7 @@
 import mongoose, { Schema }  from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import bcrypt from 'bcrypt';
+import shortid from 'shortid';
 
 const UserSchema = new Schema({
   fullname: {
@@ -29,7 +30,18 @@ const UserSchema = new Schema({
   },
   createdAt: {
     type: Date,
+    default: function() {
+      return new Date();
+    },
   },
+  emailValidated: {
+    type: Boolean,
+    default: false,
+  },
+  validationCode: {
+    type: String,
+    default: shortid.generate
+  }
 });
 
 
@@ -46,9 +58,6 @@ UserSchema.methods.validPassword = function(password) {
 
 UserSchema.pre('save', function(next) {
   const user = this;
-  // set the createdAt info
-  user.createdAt = user.createdAt || new Date();
-
   // only hash the password if it has been modified (or is new)
   if (user.isModified('password')) {
     user.password = user.generateHash(user.password);

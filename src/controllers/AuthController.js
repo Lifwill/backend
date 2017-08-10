@@ -1,7 +1,33 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import serverConfig from '../serverConfig';
 import User from '../models/user';
+import sendEmail from '../helpers/mailer'
+
+/*
+ * Private
+ * Send an email to validate the user's email
+ */
+
+
+const sendValidationEmail = (user) => {
+  // setup email data with unicode symbols
+  const mailOptions = {
+      from: serverConfig.smtpFrom, // sender address
+      to: 'jwafellman@gmail.com', // list of receivers
+      subject: 'test', // Subject line
+      text: 'Hello world ?', // plain text body
+      html: '<b>Hello world ?</b>' // html body
+  };
+   // send mail with defined transport object
+   sendEmail(mailOptions, (error, info) => {
+       if (error) {
+           return console.log(error);
+       }
+       console.log('Message %s sent: %s', info.messageId, info.response);
+   });
+};
 
 /*
  * Private
@@ -48,6 +74,7 @@ export function signup(req, res) {
     } else {
       user.password = undefined;
       const token = jwtSign(user);
+      sendValidationEmail(user);
       res.status(200).json({
         user,
         token,
