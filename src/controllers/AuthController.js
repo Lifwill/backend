@@ -1,9 +1,7 @@
-import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import serverConfig from '../serverConfig';
 import User from '../models/user';
-import sendEmail from '../helpers/mailer'
+import sendEmail from '../helpers/mailer';
 
 /*
  * Private
@@ -14,19 +12,20 @@ import sendEmail from '../helpers/mailer'
 const sendValidationEmail = (user) => {
   // setup email data with unicode symbols
   const mailOptions = {
-      from: serverConfig.smtpFrom, // sender address
-      to: 'jwafellman@gmail.com', // list of receivers
-      subject: 'test', // Subject line
-      text: 'Hello world ?', // plain text body
-      html: '<b>Hello world ?</b>' // html body
+    from: serverConfig.smtpFrom, // sender address
+    to: serverConfig.DEV_SmtpTo || user.email, // list of receivers
+    subject: 'test', // Subject line
+    text: 'Hello world ?', // plain text body
+    html: '<b>Hello world ?</b>', // html body
   };
-   // send mail with defined transport object
-   sendEmail(mailOptions, (error, info) => {
-       if (error) {
-           return console.log(error);
-       }
-       console.log('Message %s sent: %s', info.messageId, info.response);
-   });
+  // send mail with defined transport object
+  sendEmail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Message %s sent: %s', info.messageId, info.response);
+    }
+  });
 };
 
 /*
@@ -36,51 +35,60 @@ const sendValidationEmail = (user) => {
  * Pass only the email and the _id
  */
 
-const jwtSign = (user) => {
-  return jwt.sign({email: user.email, id : user._id}, serverConfig.jwtSecret, { expiresIn: serverConfig.jwtExpiresIn});
-};
+const jwtSign = user => (
+  jwt.sign({
+    email: user.email,
+    id: user.id,
+  },
+  serverConfig.jwtSecret, { expiresIn: serverConfig.jwtExpiresIn })
+);
 
 /*
  * return the profile. It may be used to see if the user is authenticated
  */
 
- export function profile(req, res) {
-   if (req.user) {
-     res.status(200).json({
-       user: req.user,
-     });
-   } else {
-     // should never happens, but just in case
-     res.status(401).json({
-       code: 'NOT_AUTHORIZED',
-     });
-   }
- }
+export function profile(req, res) {
+  if (req.user) {
+    res.status(200).json({
+      user: req.user,
+    });
+  } else {
+    // should never happens, but just in case
+    res.status(401).json({
+      code: 'NOT_AUTHORIZED',
+    });
+  }
+}
 
 /*
  * Register a new user
  * create user from the body
  * Save it to database
- * return the token and the new user profile created
+ * return the token and the new user from data created
  */
 
 export function signup(req, res) {
   const user = new User(req.body);
-  user.save(function(err, user) {
+  user.save((err, curUser) => {
     if (err) {
       res.status(500).json({
         err,
       });
     } else {
-      user.password = undefined;
-      const token = jwtSign(user);
-      sendValidationEmail(user);
+      // clone object to avoid sideEffect
+      const cloneUser = new User(curUser);
+      cloneUser.password = undefined;
+      const token = jwtSign({
+        id: cloneUser._id,
+        email: cloneUser.email,
+      });
+      sendValidationEmail(cloneUser);
       res.status(200).json({
-        user,
+        cloneUser,
         token,
-      })
+      });
     }
-  })
+  });
 }
 
 /*
@@ -93,11 +101,11 @@ export function login(req, res) {
   // validate entries
   if (!req.body.password || !req.body.email) {
     // should never happens, but just in case
-    return res.status(401).json({
+    res.status(401).json({
       code: 'NOT_AUTHORIZED',
     });
   }
-  User.findOne({ email : req.body.email }, function(err, user){
+  User.findOne({ email: req.body.email }, (err, user) => {
     if (err) {
       res.status(500).json({
         err,
@@ -107,11 +115,16 @@ export function login(req, res) {
         code: 'AUTHENTICATION_FAILED',
       });
     } else {
-      user.password = undefined;
+      // clone user to avoid sideEffect
+      const cloneUser = new User(user);
+      cloneUser.password = undefined;
       res.status(200).json({
-        user,
-        token: jwtSign(user),
-      })
+        cloneUser,
+        token: jwtSign({
+          id: cloneUser._id,
+          email: cloneUser.email,
+        }),
+      });
     }
   });
 }
@@ -127,7 +140,7 @@ export function loginRequired(req, res, next) {
   } else {
     res.status(401).json({
       code: 'NOT_AUTHORIZED',
-    })
+    });
   }
 }
 
@@ -138,20 +151,22 @@ export function loginRequired(req, res, next) {
 
 export function loadUser(req, res, next) {
   if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
-    jwt.verify(req.headers.authorization.split(' ')[1], serverConfig.jwtSecret, function(err, decode) {
+    jwt.verify(req.headers.authorization.split(' ')[1], serverConfig.jwtSecret, (err, decode) => {
       if (decode) {
-        User.findById(decode.id, function(err, user){
+        User.findById(decode.id, (userError, user) => {
           if (user) {
+            // clone user to avoid side effect
+            const cloneUser = new User(user);
             // never return the password, just in case
-            user.password = undefined;
-            req.user = user;
+            cloneUser.password = undefined;
+            req.user = cloneUser;
           }
           next();
         });
       } else {
         next();
       }
-    })
+    });
   } else {
     next();
   }

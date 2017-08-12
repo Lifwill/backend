@@ -13,6 +13,8 @@ const config = {
   smtpPort: process.env.smtpPort || 465,
   smtpSecure: process.env.smtpSecure || true,
   smtpFrom: process.env.smtpFrom || 'smtpFrom',
+  // WARNING : it is only for dev purpose and should not be used in other cases
+  DEV_SmtpTo: process.env.DEV_SmtpTo || null,
 };
 
 export default config;

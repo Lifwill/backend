@@ -1,7 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken';
 import auth from './routes/AuthRoutes';
 import serverConfig from './serverConfig';
 
@@ -10,7 +9,7 @@ const app = express();
 // Set the promises
 mongoose.Promise = global.Promise;
 // MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, { useMongoClient: true}, error => {
+mongoose.connect(serverConfig.mongoURL, { useMongoClient: true }, (error) => {
   if (error) {
     console.log('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;
@@ -24,7 +23,7 @@ app.use(auth.loadUser);
 
 app.use('/api/auth', auth);
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.send(`<html>
   <head>
     <title>Express HTML</title>
@@ -35,6 +34,6 @@ app.get('/', function (req, res) {
 </html>`);
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!'); // eslint-disable-line no-console
+app.listen(3000, () => {
+  console.log('Example app listening on port 3000!');
 });

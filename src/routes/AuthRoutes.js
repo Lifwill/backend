@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import * as AuthController from '../controllers/AuthController';
+
 const AuthRoute = new Router();
-  // Get all Posts
+
+// Get all Posts
 AuthRoute.route('/').get(AuthController.loginRequired, AuthController.profile);
 
-  // Get one post by cuid
+// Get one post by cuid
 AuthRoute.route('/login').post(AuthController.login);
 
 // Add a new Post

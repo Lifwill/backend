@@ -1,0 +1,11 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "node": true
+  },
+  "extends": "airbnb",
+  "rules": {
+    // The use of mongoose make it convenient to use _id.
+    "no-underscore-dangle": "warn"
+  }
+}
