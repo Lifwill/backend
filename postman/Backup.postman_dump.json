@@ -1,0 +1,145 @@
+{
+	"version": 1,
+	"collections": [
+		{
+			"id": "b6e0b9b0-0e6e-618e-e100-4a4122ba1ecb",
+			"name": "authentication",
+			"description": "This collection will serve to test the authentication ",
+			"auth": null,
+			"events": null,
+			"variables": [],
+			"order": [
+				"39265d83-f200-457f-b6ea-a57925b8bf32",
+				"9181fb11-44b5-4322-b602-e033fe3a1e05",
+				"70d5e633-75a8-48b8-918c-9926264f23be"
+			],
+			"folders_order": [],
+			"folders": [],
+			"requests": [
+				{
+					"id": "39265d83-f200-457f-b6ea-a57925b8bf32",
+					"name": "localhost:3000/api/auth/signup",
+					"url": "localhost:3000/api/auth/signup",
+					"description": "test creation user\n",
+					"data": [],
+					"dataMode": "raw",
+					"headerData": [
+						{
+							"key": "Content-Type",
+							"name": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": null,
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "b6e0b9b0-0e6e-618e-e100-4a4122ba1ecb",
+					"rawModeData": " {\n \t\"fullname\": \"coucou\",\n \t\"username\": \"coucouName\",\n \t\"email\": \"test@test.com\",\n \t\"password\": \"coucou\"\n }",
+					"headers": "Content-Type: application/json\n",
+					"pathVariables": {}
+				},
+				{
+					"id": "70d5e633-75a8-48b8-918c-9926264f23be",
+					"name": "localhost:3000/api/auth/profile",
+					"url": "localhost:3000/api/auth/profile",
+					"description": "",
+					"data": null,
+					"dataMode": null,
+					"headerData": [
+						{
+							"key": "content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "Authorization",
+							"value": "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6IjVjMDZjZmMwODdmN2JiM2I5MDkyZDQ4MCIsImlhdCI6MTU0NDM2MTE0OCwiZXhwIjoxNTQ0MzYxMTUxfQ.nNIBSV_Q5avNawWPPZvPkHzP7aO9VpDxgcPlW6EbCis",
+							"description": "",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"method": "GET",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": {
+						"type": "noauth",
+						"noauth": []
+					},
+					"events": null,
+					"folder": null,
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "b6e0b9b0-0e6e-618e-e100-4a4122ba1ecb",
+					"headers": "content-Type: application/json\nAuthorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6IjVjMDZjZmMwODdmN2JiM2I5MDkyZDQ4MCIsImlhdCI6MTU0NDM2MTE0OCwiZXhwIjoxNTQ0MzYxMTUxfQ.nNIBSV_Q5avNawWPPZvPkHzP7aO9VpDxgcPlW6EbCis\n",
+					"pathVariables": {}
+				},
+				{
+					"id": "9181fb11-44b5-4322-b602-e033fe3a1e05",
+					"name": "localhost:3000/api/auth/login",
+					"url": "localhost:3000/api/auth/login",
+					"description": "",
+					"data": [],
+					"dataMode": "raw",
+					"headerData": [
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"method": "POST",
+					"pathVariableData": [],
+					"queryParams": [],
+					"auth": null,
+					"events": null,
+					"folder": null,
+					"currentHelper": null,
+					"helperAttributes": null,
+					"collectionId": "b6e0b9b0-0e6e-618e-e100-4a4122ba1ecb",
+					"rawModeData": "{\n \t\"email\": \"test@test.com\",\n \t\"password\": \"coucou\"\n}",
+					"headers": "Content-Type: application/json\n",
+					"pathVariables": {}
+				}
+			]
+		}
+	],
+	"environments": [
+		{
+			"id": "e1ab6026-a7e8-d3ac-73e2-766f4110669d",
+			"name": "localhost:3000",
+			"values": []
+		},
+		{
+			"id": "60c561ae-e351-4e8b-9304-90202fe5d09b",
+			"name": "My Workspace - globals",
+			"values": [
+				{
+					"key": "echo_digest_realm",
+					"value": "Users",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "echo_digest_nonce",
+					"value": "5OKqa7PAZrvwkCWbmZ0i4Eckjq459nAI",
+					"type": "text",
+					"enabled": true
+				}
+			]
+		}
+	],
+	"headerPresets": [],
+	"globals": []
+}

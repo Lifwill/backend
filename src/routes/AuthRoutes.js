@@ -12,6 +12,9 @@ AuthRoute.route('/login').post(AuthController.login);
 // Add a new Post
 AuthRoute.route('/signup').post(AuthController.signup);
 
+// get the user
+AuthRoute.route('/profile').get(AuthController.profile);
+
 AuthRoute.loadUser = AuthController.loadUser;
 
 export default AuthRoute;

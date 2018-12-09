@@ -40,7 +40,7 @@ const jwtSign = user => (
     email: user.email,
     id: user.id,
   },
-  serverConfig.jwtSecret, { expiresIn: serverConfig.jwtExpiresIn })
+  serverConfig.jwtSecret, { /* expiresIn: serverConfig.jwtExpiresIn */ })
 );
 
 /*
@@ -104,29 +104,30 @@ export function login(req, res) {
     res.status(401).json({
       code: 'NOT_AUTHORIZED',
     });
+  } else {
+    User.findOne({ email: req.body.email }, (err, user) => {
+      if (err) {
+        res.status(500).json({
+          err,
+        });
+      } else if (!user || !user.validPassword(req.body.password)) {
+        res.status(401).json({
+          code: 'AUTHENTICATION_FAILED',
+        });
+      } else {
+        // clone user to avoid sideEffect
+        const cloneUser = new User(user);
+        cloneUser.password = undefined;
+        res.status(200).json({
+          cloneUser,
+          token: jwtSign({
+            id: cloneUser._id,
+            email: cloneUser.email,
+          }),
+        });
+      }
+    });
   }
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (err) {
-      res.status(500).json({
-        err,
-      });
-    } else if (!user || !user.validPassword(req.body.password)) {
-      res.status(401).json({
-        code: 'AUTHENTICATION_FAILED',
-      });
-    } else {
-      // clone user to avoid sideEffect
-      const cloneUser = new User(user);
-      cloneUser.password = undefined;
-      res.status(200).json({
-        cloneUser,
-        token: jwtSign({
-          id: cloneUser._id,
-          email: cloneUser.email,
-        }),
-      });
-    }
-  });
 }
 
 /*
@@ -150,10 +151,16 @@ export function loginRequired(req, res, next) {
  */
 
 export function loadUser(req, res, next) {
+  console.log(req && req.headers);
+  console.log(req && req.headers && req.headers.authorization && req.headers.authorization.split(' '));
   if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
     jwt.verify(req.headers.authorization.split(' ')[1], serverConfig.jwtSecret, (err, decode) => {
+      console.log(err);
       if (decode) {
+        console.log(decode);
         User.findById(decode.id, (userError, user) => {
+          console.log(userError);
+          console.log(user);
           if (user) {
             // clone user to avoid side effect
             const cloneUser = new User(user);
